@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spend a Billion</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background: #0077ff;
+      color: white;
+      padding: 15px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .money {
+      font-size: 20px;
+      margin-top: 5px;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+      gap: 20px;
+    }
+
+    .item {
+      background: white;
+      padding: 15px;
+      width: 250px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .item img {
+      max-width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 10px;
+    }
+
+    .item h2 {
+      margin: 10px 0 5px;
+    }
+
+    .item p {
+      margin: 5px 0;
+    }
+
+    .item button {
+      margin: 5px;
+      padding: 8px 15px;
+      background: #0077ff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .item button:disabled {
+      background: grey;
+    }
+
+    .reset {
+      background: red;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Spend a Billion</h1>
+  <div class="money" id="money">$100,000,000,000</div>
+</header>
+
+<div class="container" id="items"></div>
+
+<script>
+  const items = [
+    { name: "Big Mac", price: 2, image: "https://i.imgur.com/qYLXIIQ.jpeg" },
+    { name: "iPhone 15", price: 999, image: "https://i.imgur.com/c5ULck9.jpeg" },
+    { name: "Rolls Royce Phantom", price: 460000, image: "https://i.imgur.com/HaFN44L.jpeg" },
+    { name: "Gaming PC", price: 3000, image: "https://i.imgur.com/tQkGAg4.jpeg" },
+    { name: "PlayStation 5", price: 499, image: "https://upload.wikimedia.org/wikipedia/commons/2/2f/PlayStation_5_and_DualSense.jpg" },
+    { name: "Private Jet", price: 30000000, image: "blob:https://imgur.com/e11d5719-7ae6-44e1-8755-6e1aff8a0c32" },
+    { name: "Big Mansion", price: 4500000, image: "https://images.unsplash.com/photo-1572120360610-d971b9d7767c" },
+    { name: "Land (1 acre)", price: 10000, image: "blob:https://imgur.com/9d43fb9a-d964-446d-9eb9-cd0ceb2df85e" },
+    { name: "Land on Moon", price: 50000, image: "https://upload.wikimedia.org/wikipedia/commons/e/e1/FullMoon2010.jpg" },
+    { name: "Make a Movie", price: 100000000, image: "blob:https://imgur.com/d44f9bf8-a84c-4aee-be50-0b517e6dfdad" },
+    { name: "Space Travel (SpaceX)", price: 55000000, image: "blob:https://imgur.com/ad805c64-3c8c-4738-a421-debe3943300b" }
+  ];
+
+  let totalMoney = 100000000000;
+  const purchases = {};
+
+  const formatMoney = (amount) => "$" + amount.toLocaleString();
+
+  const updateDisplay = () => {
+    document.getElementById("money").textContent = formatMoney(totalMoney);
+
+    const itemsContainer = document.getElementById("items");
+    itemsContainer.innerHTML = "";
+
+    items.forEach(item => {
+      const count = purchases[item.name] || 0;
+
+      const div = document.createElement("div");
+      div.className = "item";
+
+      div.innerHTML = `
+        <img src="${item.image}" alt="${item.name}">
+        <h2>${item.name}</h2>
+        <p>Price: ${formatMoney(item.price)}</p>
+        <p>Owned: ${count}</p>
+        <button onclick="buyItem('${item.name}')">Buy</button>
+        <button onclick="sellItem('${item.name}')" ${count === 0 ? "disabled" : ""}>Sell</button>
+      `;
+
+      itemsContainer.appendChild(div);
+    });
+
+    // Add reset button
+    const resetDiv = document.createElement("div");
+    resetDiv.className = "item";
+    resetDiv.innerHTML = `
+      <h2>Reset All</h2>
+      <button class="reset" onclick="resetAll()">Reset</button>
+    `;
+    itemsContainer.appendChild(resetDiv);
+  };
+
+  const buyItem = (name) => {
+    const item = items.find(i => i.name === name);
+    if (item && totalMoney >= item.price) {
+      totalMoney -= item.price;
+      purchases[name] = (purchases[name] || 0) + 1;
+      updateDisplay();
+    }
+  };
+
+  const sellItem = (name) => {
+    const item = items.find(i => i.name === name);
+    if (purchases[name] > 0) {
+      totalMoney += item.price;
+      purchases[name]--;
+      updateDisplay();
+    }
+  };
+
+  const resetAll = () => {
+    totalMoney = 100000000000;
+    for (let key in purchases) {
+      purchases[key] = 0;
+    }
+    updateDisplay();
+  };
+
+  updateDisplay();
+</script>
+
+</body>
+</html>
